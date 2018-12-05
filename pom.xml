@@ -48,6 +48,13 @@
             <version>18.3.0.0</version>
         </dependency>
 
+        <!-- PostgreSQL Driver -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.1</version>
+        </dependency>
+
         <!-- PicoCLI for all that sexy CLI magic -->
         <dependency>
             <groupId>info.picocli</groupId>

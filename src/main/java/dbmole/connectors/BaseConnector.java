@@ -4,25 +4,26 @@ import dbmole.base.Base;
 import dbmole.examiner.NetworkExaminer;
 import picocli.CommandLine;
 
+import java.io.File;
 import java.sql.Connection;
 import java.util.concurrent.Callable;
 
 public abstract class BaseConnector extends Base implements Callable<Void> {
 
-    // Public Static Variables -----------------------------------------------------------------------------------------
-    public final static String USERNAME = "username";
+    // System Properties -----------------------------------------------------------------------------------------------
+    protected final String KEYSTORE_KEY = "javax.net.ssl.keyStore";
 
-    public final static String PASSWORD = "password";
+    protected final String KEYSTORE_PASSWORD_KEY = "javax.net.ssl.keyStorePassword";
 
-    public final static String DATABASE = "database";
+    protected final String KEYSTORE_TYPE_KEY = "javax.net.ssl.keyStoreType";
 
-    public final static String DEBUG = "debug";
+    protected final String TRUSTSTORE_KEY = "javax.net.ssl.trustStore";
 
-    public final static String DB_CONNECTION_TIMEOUT = "db_conn_timeout";
+    protected final String TRUSTSTORE_PASSWORD_KEY = "javax.net.ssl.trustStorePassword";
 
-    public final static String SECURE = "secure";
+    protected final String TRUSTSTORE_TYPE_KEY = "javax.net.ssl.trustStoreType";
 
-    // Protected Member Variables --------------------------------------------------------------------------------------
+    // CLI Inputs ------------------------------------------------------------------------------------------------------
     @CommandLine.Parameters(paramLabel="HOSTNAME", index="0", description="Hostname of Database Server")
     protected String host = null;
 
@@ -30,19 +31,37 @@ public abstract class BaseConnector extends Base implements Callable<Void> {
     protected int port = 0;
 
     @CommandLine.Option(names={"-u", "--username"}, description="Username to connect to the database.")
-    protected String username = "";
+    protected String username = null;
 
     @CommandLine.Option(names={"-p", "--password"}, description="Password to connect to the database.")
-    protected String password = "";
+    protected String password = null;
 
     @CommandLine.Option(names={"-d", "--database"}, description="The database (or service name) to connect to.")
-    protected String database = "";
+    protected String database = null;
 
     @CommandLine.Option(names={"-q", "--query"}, description="The query to run if the connection was successful.")
     protected String query = null;
 
     @CommandLine.Option(names="--skip-auto-debug", description = "Skips the automatic debugging process.")
     protected boolean skip_auto_debug = false;
+
+    @CommandLine.Option(names={ "--keyStorePath" }, description="Path to the Keystore")
+    protected File keyStore;
+
+    @CommandLine.Option(names={ "--keyStorePassword" }, description="Password for Keystore")
+    protected String keyStorePassword;
+
+    @CommandLine.Option(names={ "--keyStoreType" }, description="Keystore's Type")
+    protected String keyStoreType;
+
+    @CommandLine.Option(names={ "--trustStorePath" }, description="Path to the Truststore")
+    protected File trustStore;
+
+    @CommandLine.Option(names={ "--trustStorePassword" }, description="Password for the Truststore")
+    protected String trustStorePassword;
+
+    @CommandLine.Option(names={ "--trustStoreType" }, description="Truststore's Type")
+    protected String trustStoreType;
 
     protected boolean isConnectionSuccessful = false;
 
@@ -54,7 +73,6 @@ public abstract class BaseConnector extends Base implements Callable<Void> {
     }
 
     // Getters ---------------------------------------------------------------------------------------------------------
-
     public String getHost() {
         return host;
     }
@@ -81,8 +99,11 @@ public abstract class BaseConnector extends Base implements Callable<Void> {
         this.connectionException = ex;
     }
 
+    // Hooks to override -----------------------------------------------------------------------------------------------
     public void initialize() {
 
+        this.setupCustomStores();
+        this.displayCustomStoresDetails();
     }
 
     public void beforeConnect() {
@@ -96,6 +117,60 @@ public abstract class BaseConnector extends Base implements Callable<Void> {
     public void afterConnectFailure() {
 
     }
+
+    // Logic for Keystores / Truststores -------------------------------------------------------------------------------
+    protected void setupCustomStores() {
+        if(keyStore != null) {
+            String keyStorePath = keyStore.getAbsolutePath();
+            if(this.keyStore.exists()) {
+                logger.info(String.format("Setting '%s' with '%s'", KEYSTORE_KEY, keyStorePath));
+                System.setProperty(KEYSTORE_KEY, keyStorePath);
+            } else {
+                logger.error(String.format("Keystore Path '%s' does not exist. Not setting.", keyStorePath, KEYSTORE_KEY));
+            }
+        }
+
+        if(keyStorePassword != null) {
+            logger.info(String.format("Setting '%s' with '%s'", KEYSTORE_PASSWORD_KEY, keyStorePassword));
+            System.setProperty(KEYSTORE_PASSWORD_KEY, keyStorePassword);
+        }
+
+        if(keyStoreType != null) {
+            logger.info(String.format("Setting '%s' with '%s'", KEYSTORE_TYPE_KEY, keyStoreType));
+            System.setProperty(KEYSTORE_TYPE_KEY, keyStoreType);
+        }
+
+        if(trustStore != null) {
+            String trustStorePath = this.trustStore.getAbsolutePath();
+            if(this.trustStore.exists()) {
+                logger.info(String.format("Setting '%s' with '%s'", TRUSTSTORE_KEY, trustStorePath));
+                System.setProperty(TRUSTSTORE_KEY, trustStorePath);
+            } else {
+                logger.error(String.format("Truststore Path '%s' does not exist. Not setting '%s'.", trustStorePath, TRUSTSTORE_KEY));
+            }
+        }
+
+        if(trustStorePassword != null) {
+            logger.info(String.format("Setting '%s' with '%s'", TRUSTSTORE_PASSWORD_KEY, trustStorePassword));
+            System.setProperty(TRUSTSTORE_PASSWORD_KEY, trustStorePassword);
+        }
+
+        if(trustStoreType != null) {
+            logger.info(String.format("Setting '%s' with '%s'", TRUSTSTORE_TYPE_KEY, trustStoreType));
+            System.setProperty(TRUSTSTORE_TYPE_KEY, trustStoreType);
+        }
+    }
+
+    protected void displayCustomStoresDetails() {
+        logger.info("Custom Stores' Values: ");
+        logger.info(String.format("    * %s --> %s", KEYSTORE_KEY, System.getProperty(KEYSTORE_KEY)));
+        logger.info(String.format("    * %s --> %s", KEYSTORE_PASSWORD_KEY, System.getProperty(KEYSTORE_PASSWORD_KEY)));
+        logger.info(String.format("    * %s --> %s", KEYSTORE_TYPE_KEY, System.getProperty(KEYSTORE_TYPE_KEY)));
+        logger.info(String.format("    * %s --> %s", TRUSTSTORE_KEY, System.getProperty(TRUSTSTORE_KEY)));
+        logger.info(String.format("    * %s --> %s", TRUSTSTORE_PASSWORD_KEY, System.getProperty(TRUSTSTORE_PASSWORD_KEY)));
+        logger.info(String.format("    * %s --> %s", TRUSTSTORE_TYPE_KEY, System.getProperty(TRUSTSTORE_TYPE_KEY)));
+    }
+
 
     @Override
     public Void call() throws Exception {
@@ -165,12 +240,6 @@ public abstract class BaseConnector extends Base implements Callable<Void> {
         } else {
             networkExaminer.isPortAvailableForTCP(host);
         }
-    }
-
-
-    // Utility Methods -------------------------------------------------------------------------------------------------
-    public boolean isConnectionSuccessful() {
-        return this.isConnectionSuccessful;
     }
 
     // Examiner Methods --------------------------------------------------------------------------------------------------

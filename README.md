@@ -4,6 +4,11 @@ A database connectivity testing tool. Currently works with Oracle, but plans are
 
 [![Download DBMole](https://img.shields.io/badge/DBMole-Download-orange.svg)](https://github.com/davydany/dbmole/releases)
 
+## Supported Databases
+
+* Oracle
+* Oracle with TLS
+* PostgreSQL
 
 ## Getting Started
 

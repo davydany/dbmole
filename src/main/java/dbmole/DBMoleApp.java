@@ -1,9 +1,10 @@
 package dbmole;
 
-import dbmole.connectors.oracle.OracleConnector;
-import dbmole.connectors.oracle.SecureOracleConnector;
+import dbmole.connectors.sql.oracle.OracleConnector;
+import dbmole.connectors.sql.oracle.SecureOracleConnector;
 //import org.apache.commons.cli.*;
 //import org.apache.commons.cli.ParseException;
+import dbmole.connectors.sql.postgresql.PostgreSQLConnector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import picocli.CommandLine;
@@ -16,7 +17,8 @@ import java.util.concurrent.*;
  */
 @CommandLine.Command(subcommands = {
     OracleConnector.class,
-    SecureOracleConnector.class
+    SecureOracleConnector.class,
+    PostgreSQLConnector.class
 })
 public class DBMoleApp implements Callable<Void>
 {

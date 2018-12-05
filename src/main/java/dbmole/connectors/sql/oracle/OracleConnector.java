@@ -1,6 +1,6 @@
-package dbmole.connectors.oracle;
+package dbmole.connectors.sql.oracle;
 
-import dbmole.connectors.BaseJDBCConnector;
+import dbmole.connectors.sql.BaseJDBCConnector;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.pool.OracleDataSource;
 import picocli.CommandLine;

@@ -1,24 +1,22 @@
-package dbmole.connectors;
+package dbmole.connectors.sql;
+
+import dbmole.connectors.BaseConnector;
 
 import java.sql.*;
 import java.util.Properties;
 
 public abstract class BaseJDBCConnector extends BaseConnector {
 
-    public BaseJDBCConnector() {
-
-    }
-
     public Object createJDBCConnection(String connectionString, Properties props) throws Exception {
         return DriverManager.getConnection(connectionString, props);
     }
-
-    public abstract String generateConnectionString();
 
     @Override
     public void afterConnectSuccess() {
 
         if (this.query != null) {
+
+            logger.info("Query to execute: " + this.query);
             try {
                 Connection conn = this.createConnection();
                 Statement statement = conn.createStatement();
@@ -50,9 +48,22 @@ public abstract class BaseJDBCConnector extends BaseConnector {
         }
     }
 
-    //    @Override
-//    public void displayDebugInformation() {
-//        super.displayDebugInformation();
-//        logger.info(String.format("    * Connection String: %s", this.generateConnectionString()));
-//    }
+    public abstract String generateConnectionString();
+
+    public abstract Properties getConnectionProperties();
+
+    public abstract void loadDriver();
+
+    public Connection createConnection() throws Exception {
+
+        this.loadDriver();
+        String connectionString = this.generateConnectionString();
+        Properties info = this.getConnectionProperties();
+
+        logger.info("Creating connection with connection string: " + connectionString);
+        logger.info("Properties for connection: " + info.toString());
+
+        // create the connection
+        return DriverManager.getConnection(connectionString, info);
+    }
 }

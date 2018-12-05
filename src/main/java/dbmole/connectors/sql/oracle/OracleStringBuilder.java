@@ -1,4 +1,4 @@
-package dbmole.connectors.oracle;
+package dbmole.connectors.sql.oracle;
 
 import dbmole.base.Base;
 

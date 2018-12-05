@@ -4,3 +4,7 @@ services:
     image: "wnameless/oracle-xe-11g"
     ports:
       - "49161:1521"
+  postgres:
+    image: "postgres/latest"
+    ports:
+      - "5432:5432"

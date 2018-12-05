@@ -2,12 +2,12 @@
 
 A database connectivity testing tool. Currently works with Oracle, but plans are to make it work with databases that are supported by Java.
 
-[![Download DBMole](https://img.shields.io/badge/DBMole-download-orange.svg)](https://github.com/davydany/dbmole/releases)
+[![Download DBMole](https://img.shields.io/badge/DBMole-Download-orange.svg)](https://github.com/davydany/dbmole/releases)
 
 
 ## Getting Started
 
-1. Download the `dbmole-<VERSION>.jar` jar file from here: [![Download DBMole](https://img.shields.io/badge/DBMole-download-orange.svg)](https://github.com/davydany/dbmole/releases)
+1. Download the `dbmole-<VERSION>.jar` jar file from here: [![Download DBMole](https://img.shields.io/badge/DBMole-Download-orange.svg)](https://github.com/davydany/dbmole/releases)
 2. Run: `java -jar dbmole-<VERSION>.jar` to see all the options you can pass to DBConn. 
 3. Now test the database you want to connect to.
 

@@ -6,7 +6,7 @@
 
     <groupId>com.aeroxis</groupId>
     <artifactId>dbmole</artifactId>
-    <version>0.1</version>
+    <version>0.2</version>
 
     <name>dbmole</name>
     <!-- FIXME change it to the project's website -->
@@ -132,7 +132,7 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <finalName>${project.artifactId}-final</finalName>
+                    <finalName>${project.artifactId}-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
 
                     <!-- MainClass in mainfest make a executable jar -->

@@ -132,7 +132,7 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                    <finalName>${project.artifactId}-${project.version}</finalName>
+                    <finalName>${project.artifactId}-final</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
 
                     <!-- MainClass in mainfest make a executable jar -->

@@ -12,13 +12,13 @@ public abstract class BaseJDBCConnector extends BaseConnector {
     }
 
     @Override
-    public void afterConnectSuccess() {
+    public void makeQuery() {
 
         if (this.query != null) {
 
             logger.info("Query to execute: " + this.query);
             try {
-                Connection conn = this.createConnection();
+                Connection conn = (Connection) this.createConnection();
                 Statement statement = conn.createStatement();
                 ResultSet rs = statement.executeQuery(this.query);
                 ResultSetMetaData metadata = rs.getMetaData();
@@ -54,7 +54,7 @@ public abstract class BaseJDBCConnector extends BaseConnector {
 
     public abstract void loadDriver();
 
-    public Connection createConnection() throws Exception {
+    public Object createConnection() throws Exception {
 
         this.loadDriver();
         String connectionString = this.generateConnectionString();

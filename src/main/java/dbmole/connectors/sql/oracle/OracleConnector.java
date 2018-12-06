@@ -17,7 +17,7 @@ public class OracleConnector extends BaseJDBCConnector {
         this.loadDriver();
     }
 
-    private void loadDriver() {
+    public void loadDriver() {
 
         // load the OracleDriver
         try {
@@ -61,7 +61,7 @@ public class OracleConnector extends BaseJDBCConnector {
     }
 
 
-    public Connection createConnection() throws Exception {
+    public Object createConnection() throws Exception {
 
         String connectionString = this.generateConnectionString();
         Properties info = this.getConnectionProperties();

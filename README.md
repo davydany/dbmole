@@ -9,6 +9,7 @@ A database connectivity testing tool. Currently works with Oracle, but plans are
 * Oracle
 * Oracle with TLS
 * PostgreSQL
+* MongoDB
 
 ## Getting Started
 

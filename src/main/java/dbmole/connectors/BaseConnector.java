@@ -180,6 +180,7 @@ public abstract class BaseConnector extends Base implements Callable<Void> {
         try {
             this.createConnection();
             this.isConnectionSuccessful = true;
+            this.makeQuery();
             this.afterConnectSuccess();
         } catch (Exception ex) {
             this.isConnectionSuccessful = false;
@@ -250,5 +251,7 @@ public abstract class BaseConnector extends Base implements Callable<Void> {
     // ABSTRACT METHODS ------------------------------------------------------------------------------------------------
     public abstract String generateConnectionString();
 
-    public abstract Connection createConnection() throws Exception;
+    public abstract Object createConnection() throws Exception;
+
+    public abstract void makeQuery();
 }

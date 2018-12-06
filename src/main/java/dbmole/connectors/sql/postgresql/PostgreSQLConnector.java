@@ -18,7 +18,7 @@ public class PostgreSQLConnector extends BaseJDBCConnector {
         return false;
     }
 
-    private void loadDriver() {
+    public void loadDriver() {
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {

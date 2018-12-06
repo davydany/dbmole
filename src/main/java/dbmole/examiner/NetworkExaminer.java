@@ -37,13 +37,13 @@ public class NetworkExaminer extends Base {
             InetAddress address = InetAddress.getByName(host);
             boolean isReachable = address.isReachable(5000);
             if (isReachable) {
-                logger.info(String.format("Ping request to '%s' was successful.", host));
+                logger.ok(String.format("Ping request to '%s' was successful.", host));
             } else {
-                logger.info(String.format("Ping request to '%s' was unsuccessful.", host));
+                logger.fail(String.format("Ping request to '%s' was not successful.", host));
             }
             return isReachable;
         } catch (IOException e) {
-            logger.error(String.format("Unable to ping '%s' because of '%s'", host, e.getMessage()));
+            logger.fail(String.format("Unable to ping '%s' because of '%s'", host, e.getMessage()));
             return false;
         }
     }
@@ -52,10 +52,10 @@ public class NetworkExaminer extends Base {
         try {
             Socket socket = new Socket(host, this._port);
             socket.close();
-            logger.info(String.format("The Host '%s' is available on Port '%s'", host, this._port));
+            logger.ok(String.format("The Host '%s' is available on Port '%s'", host, this._port));
             return true;
         } catch (Exception e) {
-            logger.error(String.format("The Host '%s' is NOT available on Port '%s'", host, this._port));
+            logger.fail(String.format("The Host '%s' is NOT available on Port '%s'", host, this._port));
             return false;
         }
     }

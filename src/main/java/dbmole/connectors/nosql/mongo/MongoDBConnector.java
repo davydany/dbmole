@@ -2,14 +2,17 @@ package dbmole.connectors.nosql.mongo;
 
 import com.mongodb.*;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.ListDatabasesIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import dbmole.connectors.BaseConnector;
+import dbmole.exceptions.DBMoleConfigurationException;
 import org.bson.Document;
 import picocli.CommandLine;
 
 import java.util.Arrays;
 
+@CommandLine.Command(name="mongo", description="Checks connectivity to a MongoDB Database")
 public class MongoDBConnector extends BaseConnector {
 
 
@@ -35,6 +38,10 @@ public class MongoDBConnector extends BaseConnector {
     @Override
     public Object createConnection() throws Exception {
 
+        if (database == null) {
+            throw new DBMoleConfigurationException("'database' cannot be null.");
+        }
+
         MongoClientOptions options = MongoClientOptions.builder()
             .sslEnabled(this.secure)
             .sslInvalidHostNameAllowed(this.invalidHostnameAllowed)
@@ -47,39 +54,49 @@ public class MongoDBConnector extends BaseConnector {
                     .createCredential(this.username, this.database, this.password.toCharArray());
             client = new MongoClient(
                     new ServerAddress(this.host, this.port),
-                    Arrays.asList(credentials));
+                    Arrays.asList(credentials),
+                    options);
 
         } else {
             client = new MongoClient(
-                    new ServerAddress(this.host, this.port));
+                    new ServerAddress(this.host, this.port),
+                    options);
         }
+
+        ListDatabasesIterable<Document> databases = client.listDatabases();
+        for(Document db : databases) {
+            System.out.println("DB: " + db.toString());
+        }
+
         return client;
     }
 
     @Override
     public void makeQuery() {
 
-        if ((this.collection != null) && (this.query != null)) {
-            try {
-                MongoClient client = (MongoClient) this.createConnection();
-                MongoDatabase database = client.getDatabase(this.database);
-                MongoCollection collection = database.getCollection(this.collection);
-                BasicDBObject queryObject = BasicDBObject.parse(this.query);
-                FindIterable<Document> results = collection.find(queryObject);
+        if ((this.collection != null) || (this.query != null)) {
+            if ((this.collection != null) && (this.query != null)) {
+                try {
+                    MongoClient client = (MongoClient) this.createConnection();
+                    MongoDatabase database = client.getDatabase(this.database);
+                    MongoCollection collection = database.getCollection(this.collection);
+                    BasicDBObject queryObject = BasicDBObject.parse(this.query);
+                    FindIterable<Document> results = collection.find(queryObject);
 
-                int rowCount = 0;
-                for (Document doc : results) {
-                    System.out.println(doc.toJson());
-                    rowCount += 1;
+                    int rowCount = 0;
+                    for (Document doc : results) {
+                        System.out.println(doc.toJson());
+                        rowCount += 1;
+                    }
+
+                    logger.info(String.format("Query Resulted in '%s' Results", rowCount));
+                } catch (Exception ex) {
+                    logger.error("Unable to run query: " + query);
+                    ex.printStackTrace();
                 }
-
-                logger.info(String.format("Query Resulted in '%s' Results", rowCount));
-            } catch (Exception ex) {
-                logger.error("Unable to run query: " + query);
-                ex.printStackTrace();
+            } else {
+                logger.error("Both Collection (--collection) and Query (--query) must be provided to perform a query.");
             }
-        } else {
-            logger.error("Both Collection (--collection) and Query (--query) must be provided to perform a query.");
         }
     }
 }

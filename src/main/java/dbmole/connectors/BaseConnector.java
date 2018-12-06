@@ -2,6 +2,7 @@ package dbmole.connectors;
 
 import dbmole.base.Base;
 import dbmole.examiner.NetworkExaminer;
+import dbmole.exceptions.DBMoleConfigurationException;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -182,6 +183,10 @@ public abstract class BaseConnector extends Base implements Callable<Void> {
             this.isConnectionSuccessful = true;
             this.makeQuery();
             this.afterConnectSuccess();
+        } catch(DBMoleConfigurationException ex) {
+            logger.error("ERROR: " + ex.getMessage());
+            logger.exception("error encountered in config", ex);
+            System.exit(1);
         } catch (Exception ex) {
             this.isConnectionSuccessful = false;
             this.connectionException = ex;
@@ -200,8 +205,8 @@ public abstract class BaseConnector extends Base implements Callable<Void> {
             }
 
             // show the exception that was encountered while connecting
-            logger.error(String.format("Here is the exception that was encountered.", this.connectionException.getMessage()));
-            this.connectionException.printStackTrace();
+            logger.error("The following exception was encountered while connecting to the database");
+            logger.exception(String.format("ERROR: %s", this.connectionException.getMessage()), this.connectionException);
 
         }
         return null;
